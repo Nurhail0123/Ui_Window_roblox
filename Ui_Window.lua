@@ -666,7 +666,7 @@ BackgroundColor3=Color3.new(1,1,1),
 BorderSizePixel=0,
 Text="",
 RichText=true,
-TextColor3=Color3.new(1,1,1),
+TextColor3=Color3.fromHex"#D4AF37",
 TextSize=14,
 },
 TextButton={
@@ -674,7 +674,7 @@ BackgroundColor3=Color3.new(1,1,1),
 BorderSizePixel=0,
 Text="",
 AutoButtonColor=false,
-TextColor3=Color3.new(1,1,1),
+TextColor3=Color3.fromHex"#D4AF37",
 TextSize=14,
 },
 TextBox={
@@ -682,7 +682,7 @@ BackgroundColor3=Color3.new(1,1,1),
 BorderColor3=Color3.new(0,0,0),
 ClearTextOnFocus=false,
 Text="",
-TextColor3=Color3.new(0,0,0),
+TextColor3=Color3.fromHex"#D4AF37",
 TextSize=14,
 },
 ImageLabel={
@@ -4013,20 +4013,21 @@ return{
 Dark={
 Name="Dark",
 
--- Black and gold theme
-Accent=Color3.fromHex"#2B2108",
-Dialog=Color3.fromHex"#171205",
+-- Deep black and gold theme
+Accent=Color3.fromHex"#0B0802",
+Dialog=Color3.fromHex"#050505",
 Outline=Color3.fromHex"#D4AF37",
-Text=Color3.fromHex"#FFF4CC",
-Placeholder=Color3.fromHex"#B89B4A",
-Background=Color3.fromHex"#050505",
-Button=Color3.fromHex"#B8860B",
-Icon=Color3.fromHex"#FFD700",
-Toggle=Color3.fromHex"#C9A227",
+Text=Color3.fromHex"#D4AF37",
+White=Color3.fromHex"#D4AF37",
+Placeholder=Color3.fromHex"#9F842E",
+Background=Color3.fromHex"#000000",
+Button=Color3.fromHex"#8C6A12",
+Icon=Color3.fromHex"#D4AF37",
+Toggle=Color3.fromHex"#B88F1A",
 Slider=Color3.fromHex"#D4AF37",
 Checkbox=Color3.fromHex"#D4AF37",
 
-PanelBackground=Color3.fromHex"#FFF4CC",
+PanelBackground=Color3.fromHex"#000000",
 PanelBackgroundTransparency=0.95,
 
 SliderIcon=Color3.fromHex"#D4AF37",
@@ -4036,7 +4037,7 @@ Primary=Color3.fromHex"#D4AF37",
 LabelBackground=Color3.fromHex"#000000",
 LabelBackgroundTransparency=0.83,
 
-ElementBackground=Color3.fromHex"#17130A",
+ElementBackground=Color3.fromHex"#0A0803",
 ElementBackgroundTransparency=0,
 },
 
@@ -5918,7 +5919,7 @@ TextSize=18,
 FontFace=Font.new(aa.Font,Enum.FontWeight.Medium),
 AutomaticSize="XY",
 BackgroundTransparency=1,
-TextColor3=Color3.new(1,1,1),
+TextColor3=Color3.fromHex"#D4AF37",
 TextTransparency=0.05,
 })
 
@@ -9285,7 +9286,7 @@ CodeFrame=nil,
 
 local ar=ag("TextLabel",{
 Text="",
-TextColor3=Color3.fromHex"#CDD6F4",
+TextColor3=Color3.fromHex"#D4AF37",
 TextTransparency=0,
 TextSize=al.CodeSize,
 TextWrapped=false,
@@ -9391,7 +9392,7 @@ Text=al.Title,
 
 
 
-TextColor3=Color3.fromHex"#ffffff",
+TextColor3=Color3.fromHex"#D4AF37",
 TextTransparency=0.2,
 TextSize=18,
 AutomaticSize="Y",
@@ -15642,6 +15643,106 @@ end
 
 
 return h
+end
+
+
+
+--[[
+    Star particle effect
+    Usage:
+        WindUI:AddStarParticles({Count = 45, Color = Color3.fromHex"#D4AF37"})
+        WindUI:RemoveStarParticles()
+]]
+function aa.AddStarParticles(az, aA)
+    aA = aA or {}
+
+    if aa.StarParticlesGui then
+        aa.RemoveStarParticles(aa)
+    end
+
+    local count = math.clamp(tonumber(aA.Count) or 40, 1, 150)
+    local sizeMin = math.max(tonumber(aA.SizeMin) or 1, 1)
+    local sizeMax = math.max(tonumber(aA.SizeMax) or 3, sizeMin)
+    local minTransparency = math.clamp(tonumber(aA.MinTransparency) or 0.15, 0, 1)
+    local maxTransparency = math.clamp(tonumber(aA.MaxTransparency) or 0.65, minTransparency, 1)
+    local color = typeof(aA.Color) == "Color3" and aA.Color or Color3.fromRGB(255, 255, 255)
+    local speed = math.max(tonumber(aA.Speed) or 1, 0)
+
+    local gui = at("ScreenGui", {
+        Name = "WindUI/StarParticles",
+        Parent = aw,
+        IgnoreGuiInset = true,
+        ScreenInsets = Enum.ScreenInsets.None,
+        DisplayOrder = -99998,
+        ResetOnSpawn = false,
+        ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
+    })
+    av(gui)
+
+    local holder = at("Frame", {
+        Name = "Stars",
+        Parent = gui,
+        Size = UDim2.fromScale(1, 1),
+        BackgroundTransparency = 1,
+        ClipsDescendants = true,
+    })
+
+    local rng = Random.new()
+    local stars = {}
+    for i = 1, count do
+        local diameter = rng:NextInteger(sizeMin, sizeMax)
+        local star = at("Frame", {
+            Name = "Star_" .. i,
+            Parent = holder,
+            AnchorPoint = Vector2.new(0.5, 0.5),
+            Position = UDim2.fromScale(rng:NextNumber(0, 1), rng:NextNumber(0, 1)),
+            Size = UDim2.fromOffset(diameter, diameter),
+            BackgroundColor3 = color,
+            BackgroundTransparency = rng:NextNumber(minTransparency, maxTransparency),
+            BorderSizePixel = 0,
+            ZIndex = 1,
+        }, {
+            at("UICorner", {CornerRadius = UDim.new(1, 0)}),
+        })
+        table.insert(stars, {
+            object = star,
+            baseTransparency = star.BackgroundTransparency,
+            phase = rng:NextNumber(0, math.pi * 2),
+            rate = rng:NextNumber(0.7, 1.5),
+        })
+    end
+
+    local connection
+    connection = am.RenderStepped:Connect(function()
+        if not gui.Parent then
+            if connection then connection:Disconnect() end
+            return
+        end
+        local now = os.clock() * speed
+        for _, data in ipairs(stars) do
+            if data.object.Parent then
+                local pulse = (math.sin(now * data.rate + data.phase) + 1) * 0.5
+                data.object.BackgroundTransparency = math.clamp(
+                    data.baseTransparency - pulse * 0.25, 0, 1
+                )
+            end
+        end
+    end)
+
+    aa.StarParticlesGui = gui
+    aa.StarParticlesConnection = connection
+    return gui
+end
+
+function aa.RemoveStarParticles(az)
+    if aa.StarParticlesConnection then
+        aa.StarParticlesConnection:Disconnect()
+        aa.StarParticlesConnection = nil
+    end
+    if aa.StarParticlesGui then
+        aa.StarParticlesGui:Destroy()
+        aa.StarParticlesGui = nil
+    end
 end
 
 return aa
